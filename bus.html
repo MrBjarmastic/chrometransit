@@ -1,0 +1,1257 @@
+<form action="http://s.is/journeyplanner/confirmJourneyPlan.do;jsessionid=999E0D1A25BC49A02646A208F15A9DD8.icelandD" id="minimalJourneyRequestDetails" method="post" class="journeyplanner">
+      
+   <input type="hidden" name="maximumJourneys" value="3">
+       <input type="hidden" name="complexWalk" value="true">
+
+  <script type="text/JavaScript" src="http://s.is/journeyplanner/servlet/scripts?name=uk/co/aimltd/resources/javascript/jquery/1.6.4/ui/jquery-ui-1.8.16.custom.min.js"></script>
+
+
+
+<!-- Start of locationinput tag -->
+
+<div id="originName_locationInput" class="locationInput required">
+  
+  <label for="originName">Start</label>
+  
+  <div class="controls">
+
+        <input type="text" name="originName" tabindex="111" value="" id="originName" class="inputText ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+      
+
+    <div id="originName_errors" class="error" style="display: none;"></div>
+  </div>
+</div>
+
+<script type="text/javascript">
+            /* <![CDATA[ */ 
+  $(document).ready(function(){
+  // 
+  // jQuery to add events
+  var inputJQElm = $('#originName') ;
+  // Populate the empty field with a message
+  if ( inputJQElm.val() == "" )
+    {
+    inputJQElm.val("Hvaðan ertu að ferðast?");
+    }
+
+  // Hide the error div if it is empty
+  if (inputJQElm.siblings('div.error').children().length == 0)
+    {
+    inputJQElm.siblings('div.error').hide();
+    }
+  
+  // Add event handlers
+  // focus - clears the empty message
+  // blur  - puts it back if nothing typed
+  // form validation - field is required.
+  inputJQElm
+    .focus  (
+        function()
+          {
+          // Clears box when selected and holding prompt text
+          if ( $(this).val() == "Hvaðan ertu að ferðast?" )
+            {
+            $(this).val('');
+            }
+          }
+        )
+    .blur (
+        function()
+          {
+          // Clears box when selected and holding prompt text
+          if ( $(this).val() == "" )
+            {
+            $(this).val("Hvaðan ertu að ferðast?");
+            }
+          else
+            {
+            // clear the error message
+            $(this).siblings('div.error').html('');
+
+            // Hide error box
+            $(this).siblings('div.error').hide();
+            }
+          }
+        );
+
+  $('#originName').bind("validate", function(event, trigerEvent) {  
+    // Client side validate
+    if ( $(this).attr('value') == "" )
+      {
+      // prevent the form from submitting
+      trigerEvent.preventDefault();
+      // Show error box
+      $(this).siblings('div.error').show();
+      // Display an error
+      $(this).siblings('div.error').html("Brottfarastaður þarf að vera útfyllt");
+      $(this).focus();
+      // stop any other events from triggering
+      trigerEvent.stopImmediatePropagation();
+      }
+  });
+  // make the activate events on the button turn off global validation
+  $('#originName-button').bind("keydown keypress keyup",
+    function(event, trigerEvent)
+      {
+      // Was this not the tab key ? (We dont want to clear the input field if it was)
+      if (event.which != 9 && event.which != 0)
+        {
+        var elm = $('#originName');
+        performValidation(elm, "Hvaðan ertu að ferðast?");
+        }
+      }
+  );
+
+  $('#originName-button').bind("click",
+      function(event, trigerEvent)
+        {
+        var elm = $('#originName');
+        performValidation(elm, "Hvaðan ertu að ferðast?", event);
+        }
+    );  
+
+  function activate_originName_button()
+    {
+    $("#originName-button").click();
+    }
+  
+  function performValidation(elm, emptyMessage, event)
+    {   
+    var value = elm.attr('value');
+
+    // Clears box when selected and holding prompt text
+    if ( value == emptyMessage )
+      {
+      // Dont submit the warning
+      value = "" ;
+      elm.attr('value','');
+      }
+    else
+      {
+      // Add non-validation marker to all confirm buttons
+      $("input[type='submit']").data("non-validate", true);
+      }   
+    
+    elm.trigger("validate", [event]);
+    }
+
+  // Get the form element from jQuery then add an event to its form element
+  var inputFrm = inputJQElm.parents("form:eq(0)");
+  $(inputFrm)
+    .submit (
+        function(event)
+          {
+          var elm = $('#originName');
+          var value = elm.attr('value');
+          // Clears box when selected and holding prompt text
+          if ( value == "Hvaðan ertu að ferðast?" )
+            {
+            // Dont submit the warning
+            value = "" ;
+            elm.attr('value','');
+            }
+          
+          
+          // Does this button have a non-validation marker
+          var nonvalidate = $('#originName-button').data("non-validate");
+          if (typeof nonvalidate == "undefined")
+            {
+            elm.trigger("validate", [event]);
+            }
+          else
+            {
+            $('#originName-button').removeData("non-validate");
+            }
+          
+          }
+        );
+
+
+
+  function highlight(value, term)
+    {
+    var terms = $.trim(term).replace(/\s+/g, " ").split(" ");
+    var output = value;
+    for (var i = 0; i < terms.length; ++i)
+      {
+      var singleterm = $.trim(terms[i]);
+      output = output.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + terms[i].replace(/([\^$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>");
+      }
+    return output;
+    }
+  
+  // Add the auto complete
+  inputJQElm.autocomplete({
+    delay: 400,
+    minLength: 2,
+    source: function(request, response)
+      {
+      $.ajax(
+        {
+        url: inputFrm.attr("action"),
+        dataType: "jsonp",
+        cache: false,
+        data: 
+          {
+          originName : request.term,
+          
+          method : 'dynamicFromLocationLookup'
+          },
+        success: function(data)
+          {           
+          // Only process the response if the query is still correct
+          if (request.term == $('#originName').val())
+            {
+            response( $.map(data.locations, function(item, itemIndex)
+              {
+              return {label: highlight(item.name, request.term), value: item.name, locationIndex: itemIndex};
+              }));
+            }
+          }
+        });
+      },
+    focus: function(event, ui)
+      {
+      // default is to change the content of the input, we don't want this.
+      return false;
+      },
+    blur: function(event, ui)
+      {
+      // Don't update the input element contents 
+      return false;
+      },
+    open: function()
+      {
+      var element = $('#originName');
+      var wrapdiv = $("#originName-menuwrapper");
+      var ul = element.autocomplete("widget");
+      $(wrapdiv).attr("style", $(ul).attr("style"));
+      $(ul).removeAttr("style");
+      
+      $(wrapdiv).show().position( $.extend({
+        of : element
+      }, element.autocomplete("option", "position") )).css("z-index", 10);
+      
+      var keyDownEvent = jQuery.Event("keydown");
+      keyDownEvent.keyCode = $.ui.keyCode.DOWN;
+      element.trigger(keyDownEvent);
+      },
+    close: function()
+      {
+      var wrapdiv = $("#originName-menuwrapper");
+      $(wrapdiv).hide();
+      },
+    
+      
+        search: function()
+          {
+          
+          $("#originName-button").removeAttr("disabled");
+          },
+      
+    
+    select: function(event, ui)
+      {
+      var element = $('#originName');
+      element.val(ui.item.label);
+      
+              
+        $.ajax(
+            {
+            url: inputFrm.attr("action"),
+            dataType: "jsonp",
+            cache: false,
+            data: 
+              {
+              selectedIndex : ui.item.locationIndex,
+              method : 'dynamicLocationSelect'
+              }
+            });       
+        
+        
+          // Disable the filter and confirm button
+          
+          // Defect 5880: Replace &amp; entities in the value with actual &
+          ui.item.value = ui.item.value.replace("&amp;","&");
+          $("#originName-button").attr("disabled", "disabled");
+        
+      
+      }
+  });
+  
+  // Our own renderItem is required because we store the label as html not text - default sets the text of the link
+  inputJQElm.data("autocomplete")._renderItem = function(ul, item)
+    {
+    return $( "<li></li>" )
+      .data( "item.autocomplete", item )
+      .append( $( "<a></a>" ).html( item.label ) )
+      .appendTo( ul );
+    }
+
+  // Wrap the autocomplete results list with a div, this is for styling and optional additional content.
+  function wrapResultList_originName()
+    {
+    var ul = inputJQElm.autocomplete("widget");
+    var newdiv = $('<div id="originName-menuwrapper"></div>');
+    $(newdiv).attr("class", $(ul).attr("class"));
+    $(newdiv).attr("style", $(ul).attr("style"));
+    $(newdiv).addClass("ui-menu-wrapper");
+    $(newdiv).removeClass("ui-corner-all");
+    $(newdiv).removeClass("ui-widget");
+    $(newdiv).removeClass("ui-menu");
+    $(ul).wrap(newdiv);
+    $(ul).removeClass("ui-autocomplete");
+    $(ul).removeClass("ui-corner-all");
+    $(ul).removeClass("ui-widget");
+    $(ul).removeAttr("style");
+
+    
+      
+        $(ul).after('<button id="result-originName-button">Staðfesta staðsetningu...</button>');
+        $("#result-originName-button").click(function()
+          {
+          activate_originName_button();
+          });
+      
+      
+    
+    if ( $.fn.bgiframe )
+      {
+      $(newdiv).bgiframe();
+      }
+    $(newdiv).hide();
+    }
+  wrapResultList_originName();
+
+  });
+  //
+
+            /* ]]> */
+            </script>
+<!-- End of locationinput tag -->
+
+  <!-- Scripts for ui/jquery-ui-1.8.16.custom.min.js included already -->
+
+<!-- Start of locationinput tag -->
+
+<div id="destinationName_locationInput" class="locationInput required">
+  
+  <label for="destinationName">Áfangastaður</label>
+  
+  <div class="controls">
+
+        <input type="text" name="destinationName" tabindex="121" value="" id="destinationName" class="inputText ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    
+    <div id="destinationName_errors" class="error" style="display: none;"></div>
+  </div>
+</div>
+
+<script type="text/javascript">
+            /* <![CDATA[ */ 
+  $(document).ready(function(){
+  // 
+  // jQuery to add events
+  var inputJQElm = $('#destinationName') ;
+  // Populate the empty field with a message
+  if ( inputJQElm.val() == "" )
+    {
+    inputJQElm.val("Hvert ertu að ferðast?");
+    }
+
+  // Hide the error div if it is empty
+  if (inputJQElm.siblings('div.error').children().length == 0)
+    {
+    inputJQElm.siblings('div.error').hide();
+    }
+  
+  // Add event handlers
+  // focus - clears the empty message
+  // blur  - puts it back if nothing typed
+  // form validation - field is required.
+  inputJQElm
+    .focus  (
+        function()
+          {
+          // Clears box when selected and holding prompt text
+          if ( $(this).val() == "Hvert ertu að ferðast?" )
+            {
+            $(this).val('');
+            }
+          }
+        )
+    .blur (
+        function()
+          {
+          // Clears box when selected and holding prompt text
+          if ( $(this).val() == "" )
+            {
+            $(this).val("Hvert ertu að ferðast?");
+            }
+          else
+            {
+            // clear the error message
+            $(this).siblings('div.error').html('');
+
+            // Hide error box
+            $(this).siblings('div.error').hide();
+            }
+          }
+        );
+
+  $('#destinationName').bind("validate", function(event, trigerEvent) { 
+    // Client side validate
+    if ( $(this).attr('value') == "" )
+      {
+      // prevent the form from submitting
+      trigerEvent.preventDefault();
+      // Show error box
+      $(this).siblings('div.error').show();
+      // Display an error
+      $(this).siblings('div.error').html("Áfangastaður þarf að vera útfyllt");
+      $(this).focus();
+      // stop any other events from triggering
+      trigerEvent.stopImmediatePropagation();
+      }
+  });
+  // make the activate events on the button turn off global validation
+  $('#destinationName-button').bind("keydown keypress keyup",
+    function(event, trigerEvent)
+      {
+      // Was this not the tab key ? (We dont want to clear the input field if it was)
+      if (event.which != 9 && event.which != 0)
+        {
+        var elm = $('#destinationName');
+        performValidation(elm, "Hvert ertu að ferðast?");
+        }
+      }
+  );
+
+  $('#destinationName-button').bind("click",
+      function(event, trigerEvent)
+        {
+        var elm = $('#destinationName');
+        performValidation(elm, "Hvert ertu að ferðast?", event);
+        }
+    );  
+
+  function activate_destinationName_button()
+    {
+    $("#destinationName-button").click();
+    }
+  
+  function performValidation(elm, emptyMessage, event)
+    {   
+    var value = elm.attr('value');
+
+    // Clears box when selected and holding prompt text
+    if ( value == emptyMessage )
+      {
+      // Dont submit the warning
+      value = "" ;
+      elm.attr('value','');
+      }
+    else
+      {
+      // Add non-validation marker to all confirm buttons
+      $("input[type='submit']").data("non-validate", true);
+      }   
+    
+    elm.trigger("validate", [event]);
+    }
+
+  // Get the form element from jQuery then add an event to its form element
+  var inputFrm = inputJQElm.parents("form:eq(0)");
+  $(inputFrm)
+    .submit (
+        function(event)
+          {
+          var elm = $('#destinationName');
+          var value = elm.attr('value');
+          // Clears box when selected and holding prompt text
+          if ( value == "Hvert ertu að ferðast?" )
+            {
+            // Dont submit the warning
+            value = "" ;
+            elm.attr('value','');
+            }
+          
+          
+          // Does this button have a non-validation marker
+          var nonvalidate = $('#destinationName-button').data("non-validate");
+          if (typeof nonvalidate == "undefined")
+            {
+            elm.trigger("validate", [event]);
+            }
+          else
+            {
+            $('#destinationName-button').removeData("non-validate");
+            }
+          
+          }
+        );
+
+
+
+  function highlight(value, term)
+    {
+    var terms = $.trim(term).replace(/\s+/g, " ").split(" ");
+    var output = value;
+    for (var i = 0; i < terms.length; ++i)
+      {
+      var singleterm = $.trim(terms[i]);
+      output = output.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + terms[i].replace(/([\^$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>");
+      }
+    return output;
+    }
+  
+  // Add the auto complete
+  inputJQElm.autocomplete({
+    delay: 400,
+    minLength: 2,
+    source: function(request, response)
+      {
+      $.ajax(
+        {
+        url: inputFrm.attr("action"),
+        dataType: "jsonp",
+        cache: false,
+        data: 
+          {
+          destinationName : request.term,
+          
+          method : 'dynamicToLocationLookup'
+          },
+        success: function(data)
+          {           
+          // Only process the response if the query is still correct
+          if (request.term == $('#destinationName').val())
+            {
+            response( $.map(data.locations, function(item, itemIndex)
+              {
+              return {label: highlight(item.name, request.term), value: item.name, locationIndex: itemIndex};
+              }));
+            }
+          }
+        });
+      },
+    focus: function(event, ui)
+      {
+      // default is to change the content of the input, we don't want this.
+      return false;
+      },
+    blur: function(event, ui)
+      {
+      // Don't update the input element contents 
+      return false;
+      },
+    open: function()
+      {
+      var element = $('#destinationName');
+      var wrapdiv = $("#destinationName-menuwrapper");
+      var ul = element.autocomplete("widget");
+      $(wrapdiv).attr("style", $(ul).attr("style"));
+      $(ul).removeAttr("style");
+      
+      $(wrapdiv).show().position( $.extend({
+        of : element
+      }, element.autocomplete("option", "position") )).css("z-index", 10);
+      
+      var keyDownEvent = jQuery.Event("keydown");
+      keyDownEvent.keyCode = $.ui.keyCode.DOWN;
+      element.trigger(keyDownEvent);
+      },
+    close: function()
+      {
+      var wrapdiv = $("#destinationName-menuwrapper");
+      $(wrapdiv).hide();
+      },
+    
+      
+        search: function()
+          {
+          
+          $("#destinationName-button").removeAttr("disabled");
+          },
+      
+    
+    select: function(event, ui)
+      {
+      var element = $('#destinationName');
+      element.val(ui.item.label);
+      
+              
+        $.ajax(
+            {
+            url: inputFrm.attr("action"),
+            dataType: "jsonp",
+            cache: false,
+            data: 
+              {
+              selectedIndex : ui.item.locationIndex,
+              method : 'dynamicLocationSelect'
+              }
+            });       
+        
+        
+          // Disable the filter and confirm button
+          
+          // Defect 5880: Replace &amp; entities in the value with actual &
+          ui.item.value = ui.item.value.replace("&amp;","&");
+          $("#destinationName-button").attr("disabled", "disabled");
+        
+      
+      }
+  });
+  
+  // Our own renderItem is required because we store the label as html not text - default sets the text of the link
+  inputJQElm.data("autocomplete")._renderItem = function(ul, item)
+    {
+    return $( "<li></li>" )
+      .data( "item.autocomplete", item )
+      .append( $( "<a></a>" ).html( item.label ) )
+      .appendTo( ul );
+    }
+
+  // Wrap the autocomplete results list with a div, this is for styling and optional additional content.
+  function wrapResultList_destinationName()
+    {
+    var ul = inputJQElm.autocomplete("widget");
+    var newdiv = $('<div id="destinationName-menuwrapper"></div>');
+    $(newdiv).attr("class", $(ul).attr("class"));
+    $(newdiv).attr("style", $(ul).attr("style"));
+    $(newdiv).addClass("ui-menu-wrapper");
+    $(newdiv).removeClass("ui-corner-all");
+    $(newdiv).removeClass("ui-widget");
+    $(newdiv).removeClass("ui-menu");
+    $(ul).wrap(newdiv);
+    $(ul).removeClass("ui-autocomplete");
+    $(ul).removeClass("ui-corner-all");
+    $(ul).removeClass("ui-widget");
+    $(ul).removeAttr("style");
+
+    
+      
+        $(ul).after('<button id="result-destinationName-button">Staðfesta staðsetningu...</button>');
+        $("#result-destinationName-button").click(function()
+          {
+          activate_destinationName_button();
+          });
+      
+      
+    
+    if ( $.fn.bgiframe )
+      {
+      $(newdiv).bgiframe();
+      }
+    $(newdiv).hide();
+    }
+  wrapResultList_destinationName();
+
+  });
+            </script>
+<!-- End of locationinput tag -->
+  <!-- Scripts for ui/jquery-ui-1.8.16.custom.min.js included already -->
+<!-- Start of locationinput tag -->
+<div id="viaName_locationInput" class="locationInput required">
+  
+  <label for="viaName">Gegnum (valfrjálst)</label>
+  
+  <div class="controls">
+        <input type="text" name="viaName" tabindex="131" value="" id="viaName" class="inputText ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+    <div id="viaName_errors" class="error" style="display: none;"></div>
+  </div>
+</div>
+
+<script type="text/javascript">
+            /* <![CDATA[ */ 
+  $(document).ready(function(){
+  // 
+  // jQuery to add events
+  var inputJQElm = $('#viaName') ;
+  // Populate the empty field with a message
+  if ( inputJQElm.val() == "" )
+    {
+    inputJQElm.val("Hvaða stað ertu að ferðast gegnum?");
+    }
+
+  // Hide the error div if it is empty
+  if (inputJQElm.siblings('div.error').children().length == 0)
+    {
+    inputJQElm.siblings('div.error').hide();
+    }
+  
+  // Add event handlers
+  // focus - clears the empty message
+  // blur  - puts it back if nothing typed
+  // form validation - field is required.
+  inputJQElm
+    .focus  (
+        function()
+          {
+          // Clears box when selected and holding prompt text
+          if ( $(this).val() == "Hvaða stað ertu að ferðast gegnum?" )
+            {
+            $(this).val('');
+            }
+          }
+        )
+    .blur (
+        function()
+          {
+          // Clears box when selected and holding prompt text
+          if ( $(this).val() == "" )
+            {
+            $(this).val("Hvaða stað ertu að ferðast gegnum?");
+            }
+          else
+            {
+            // clear the error message
+            $(this).siblings('div.error').html('');
+
+            // Hide error box
+            $(this).siblings('div.error').hide();
+            }
+          }
+        );
+
+  $('#viaName').bind("validate", function(event, trigerEvent) { 
+    // Client side validate
+    if ( $(this).attr('value') == "" )
+      {
+      // prevent the form from submitting
+      trigerEvent.preventDefault();
+      // Show error box
+      $(this).siblings('div.error').show();
+      // Display an error
+      $(this).siblings('div.error').html("Gegnum (valfrjálst) þarf að vera útfyllt");
+      $(this).focus();
+      // stop any other events from triggering
+      trigerEvent.stopImmediatePropagation();
+      }
+  });
+  // make the activate events on the button turn off global validation
+  $('#viaName-button').bind("keydown keypress keyup",
+    function(event, trigerEvent)
+      {
+      // Was this not the tab key ? (We dont want to clear the input field if it was)
+      if (event.which != 9 && event.which != 0)
+        {
+        var elm = $('#viaName');
+        performValidation(elm, "Hvaða stað ertu að ferðast gegnum?");
+        }
+      }
+  );
+
+  $('#viaName-button').bind("click",
+      function(event, trigerEvent)
+        {
+        var elm = $('#viaName');
+        performValidation(elm, "Hvaða stað ertu að ferðast gegnum?", event);
+        }
+    );  
+
+  function activate_viaName_button()
+    {
+    $("#viaName-button").click();
+    }
+  
+  function performValidation(elm, emptyMessage, event)
+    {   
+    var value = elm.attr('value');
+
+    // Clears box when selected and holding prompt text
+    if ( value == emptyMessage )
+      {
+      // Dont submit the warning
+      value = "" ;
+      elm.attr('value','');
+      }
+    else
+      {
+      // Add non-validation marker to all confirm buttons
+      $("input[type='submit']").data("non-validate", true);
+      }   
+    
+    elm.trigger("validate", [event]);
+    }
+
+  // Get the form element from jQuery then add an event to its form element
+  var inputFrm = inputJQElm.parents("form:eq(0)");
+  $(inputFrm)
+    .submit (
+        function(event)
+          {
+          var elm = $('#viaName');
+          var value = elm.attr('value');
+          // Clears box when selected and holding prompt text
+          if ( value == "Hvaða stað ertu að ferðast gegnum?" )
+            {
+            // Dont submit the warning
+            value = "" ;
+            elm.attr('value','');
+            }
+          
+          
+          }
+        );
+
+
+
+  function highlight(value, term)
+    {
+    var terms = $.trim(term).replace(/\s+/g, " ").split(" ");
+    var output = value;
+    for (var i = 0; i < terms.length; ++i)
+      {
+      var singleterm = $.trim(terms[i]);
+      output = output.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + terms[i].replace(/([\^$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>");
+      }
+    return output;
+    }
+  
+  // Add the auto complete
+  inputJQElm.autocomplete({
+    delay: 400,
+    minLength: 2,
+    source: function(request, response)
+      {
+      $.ajax(
+        {
+        url: inputFrm.attr("action"),
+        dataType: "jsonp",
+        cache: false,
+        data: 
+          {
+          viaName : request.term,
+          
+          method : 'dynamicViaLocationLookup'
+          },
+        success: function(data)
+          {           
+          // Only process the response if the query is still correct
+          if (request.term == $('#viaName').val())
+            {
+            response( $.map(data.locations, function(item, itemIndex)
+              {
+              return {label: highlight(item.name, request.term), value: item.name, locationIndex: itemIndex};
+              }));
+            }
+          }
+        });
+      },
+    focus: function(event, ui)
+      {
+      // default is to change the content of the input, we don't want this.
+      return false;
+      },
+    blur: function(event, ui)
+      {
+      // Don't update the input element contents 
+      return false;
+      },
+    open: function()
+      {
+      var element = $('#viaName');
+      var wrapdiv = $("#viaName-menuwrapper");
+      var ul = element.autocomplete("widget");
+      $(wrapdiv).attr("style", $(ul).attr("style"));
+      $(ul).removeAttr("style");
+      
+      $(wrapdiv).show().position( $.extend({
+        of : element
+      }, element.autocomplete("option", "position") )).css("z-index", 10);
+      
+      var keyDownEvent = jQuery.Event("keydown");
+      keyDownEvent.keyCode = $.ui.keyCode.DOWN;
+      element.trigger(keyDownEvent);
+      },
+    close: function()
+      {
+      var wrapdiv = $("#viaName-menuwrapper");
+      $(wrapdiv).hide();
+      },
+    
+      
+        search: function()
+          {
+          
+          $("#viaName-button").removeAttr("disabled");
+          },
+      
+    
+    select: function(event, ui)
+      {
+      var element = $('#viaName');
+      element.val(ui.item.label);
+      
+              
+        $.ajax(
+            {
+            url: inputFrm.attr("action"),
+            dataType: "jsonp",
+            cache: false,
+            data: 
+              {
+              selectedIndex : ui.item.locationIndex,
+              method : 'dynamicLocationSelect'
+              }
+            });       
+        
+        
+          // Disable the filter and confirm button
+          
+          // Defect 5880: Replace &amp; entities in the value with actual &
+          ui.item.value = ui.item.value.replace("&amp;","&");
+          $("#viaName-button").attr("disabled", "disabled");
+        
+      
+      }
+  });
+  
+  // Our own renderItem is required because we store the label as html not text - default sets the text of the link
+  inputJQElm.data("autocomplete")._renderItem = function(ul, item)
+    {
+    return $( "<li></li>" )
+      .data( "item.autocomplete", item )
+      .append( $( "<a></a>" ).html( item.label ) )
+      .appendTo( ul );
+    }
+
+  // Wrap the autocomplete results list with a div, this is for styling and optional additional content.
+  function wrapResultList_viaName()
+    {
+    var ul = inputJQElm.autocomplete("widget");
+    var newdiv = $('<div id="viaName-menuwrapper"></div>');
+    $(newdiv).attr("class", $(ul).attr("class"));
+    $(newdiv).attr("style", $(ul).attr("style"));
+    $(newdiv).addClass("ui-menu-wrapper");
+    $(newdiv).removeClass("ui-corner-all");
+    $(newdiv).removeClass("ui-widget");
+    $(newdiv).removeClass("ui-menu");
+    $(ul).wrap(newdiv);
+    $(ul).removeClass("ui-autocomplete");
+    $(ul).removeClass("ui-corner-all");
+    $(ul).removeClass("ui-widget");
+    $(ul).removeAttr("style");
+
+    
+      
+        $(ul).after('<button id="result-viaName-button">Staðfesta staðsetningu...</button>');
+        $("#result-viaName-button").click(function()
+          {
+          activate_viaName_button();
+          });
+      
+      
+    
+    if ( $.fn.bgiframe )
+      {
+      $(newdiv).bgiframe();
+      }
+    $(newdiv).hide();
+    }
+  wrapResultList_viaName();
+
+  });
+  //
+
+            /* ]]> */
+            </script>
+<!-- End of locationinput tag -->
+
+
+        
+        
+        <script>
+            /* <![CDATA[ */ 
+          $(document).ready(function(){
+            $("div#originName_locationInput input[name='originName']").focus();
+    
+            // Get the form
+            var form = $("div#originName_locationInput input[name='originName']").get().form;
+          });
+        
+            /* ]]> */
+            </script>
+      
+        
+        
+          <div id="topControls">
+            
+            <div class="labelPadding"></div>
+            <input tabindex="141" name="methoddefaultMethod" id="topSearchButton" class="inputButton" type="submit" value="Leita..." title="Leita...">
+          </div>
+        
+      <a href="http://s.is/journeyplanner/start.do" class="journeyplan_link external" target="_blank" title="advanced search (Opnast � n�jum vafraglugga)">advanced search</a>
+  <div class="leaveOrArriveBy required">
+          <label for="leaveby" class="inputRadioWide">
+        <input type="radio" name="journeyTypeLeaveBy" tabindex="211" value="true" checked="" id="leaveby">
+      Brottfarartími</label>
+      <label for="arriveby" class="inputRadioWide">
+        <input type="radio" name="journeyTypeLeaveBy" tabindex="212" value="false" id="arriveby">
+      Komutími</label>
+  </div>
+  <div class="timeInput timeDateInput required">
+      
+      <label for="mainJourneyRequestDetailstimeH">Tími</label>
+        <input name="time" id="mainJourneyRequestDetailstime" type="text" value="11:32" style="display: none;">
+        <select name="timeH" id="timeH" onchange="UpdateminimalJourneyRequestDetails_timeSelect(this)">
+          <option value="0">00</option><option value="1">01</option>
+          <option value="2">02</option><option value="3">03</option>
+          <option value="4">04</option><option value="5">05</option>
+          <option value="6">06</option><option value="7">07</option>
+          <option value="8">08</option><option value="9">09</option>
+          <option value="10">10</option><option value="11">11</option>
+          <option value="12">12</option><option value="13">13</option>
+          <option value="14">14</option><option value="15">15</option>
+          <option value="16">16</option><option value="17">17</option>
+          <option value="18">18</option><option value="19">19</option>
+          <option value="20">20</option><option value="21">21</option>
+          <option value="22">22</option><option value="23">23</option>
+        </select>
+        <select name="timeM" id="timeM" onchange="UpdateminimalJourneyRequestDetails_timeSelect(this)">
+          <option value="0">00</option>
+          <option value="5">05</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+          <option value="35">35</option>
+          <option value="40">40</option>
+          <option value="45">45</option>
+          <option value="50">50</option>
+          <option value="55">55</option>
+        </select>
+      
+      <script type="text/JavaScript" src="http://s.is/journeyplanner/servlet/scripts?name=uk/co/aimltd/resources/javascript/combo_date_selectorv0.1/tmInput.js"></script>
+      
+      <script type="text/JavaScript">
+            /* <![CDATA[ */ //<!--
+
+        var minimalJourneyRequestDetails_timeSelect = null ;
+
+        //
+        //  formWithDate - The form with the Date on it.
+        //         - Looks for an element called Date.
+        //
+        function UpdateminimalJourneyRequestDetails_timeSelect(formWithTime)
+          {
+          var h = new String( minimalJourneyRequestDetails_timeSelect.getSelHour() );
+          var m = padZero( minimalJourneyRequestDetails_timeSelect.getSelMins() );
+
+          formWithTime.form.time.value = h + ':' + m + ':00';
+          }
+
+        function CreateminimalJourneyRequestDetails_timeSelect()
+          {
+          var timeForm = document.forms['minimalJourneyRequestDetails'] ;
+
+          if ( timeForm == null )
+            {
+            alert ( "ERROR: Unable to find form 'minimalJourneyRequestDetails'." );
+            }
+          else
+          if ( timeForm.mainJourneyRequestDetailstime == null  )
+            {
+            alert ( "ERROR: Unable to find form 'minimalJourneyRequestDetails.time'." );
+            }
+          else
+          if ( timeForm.mainJourneyRequestDetailstime.length != null  )
+            {
+            alert ( "ERROR: Multiple 'minimalJourneyRequestDetails.time' found." );
+            }
+          else
+            {
+            /*
+             * Create the input boxes and hide the select for when javascript is on.
+             */
+             var inputElm = timeForm.mainJourneyRequestDetailstime;
+             var selectsHtml = "<select name='timeH'  id='timeH' onChange='UpdateminimalJourneyRequestDetails_timeSelect(this)'><" + "/select>" 
+                     + "<select name='timeM'  id='timeM' onChange='UpdateminimalJourneyRequestDetails_timeSelect(this)'><" + "/select>" ;
+             $(inputElm).hide();
+             $(inputElm).after(selectsHtml);
+
+            // Create the time selection
+            minimalJourneyRequestDetails_timeSelect = new tmInput( 'time', 'minimalJourneyRequestDetails' );
+
+            // Search for the label so that the target of the label can be changed
+            var prevNode = timeForm.time.previousSibling ;
+            while ( prevNode != null )
+              {
+              // Match only the previous label
+              if ( prevNode.tagName == "LABEL" )
+                {
+                // Change the refrenced element
+                prevNode.htmlFor = prevNode.htmlFor + "H" ;
+                break;
+                }
+              // Get the next node
+              prevNode = prevNode.previousSibling ;
+              }
+            }
+          }
+          
+        /*
+         * Create the input boxes and hide the select for when javascript is on.
+         */
+        // Needs jquery
+        $(document).ready(
+          function () 
+          {
+            CreateminimalJourneyRequestDetails_timeSelect();
+          } 
+        ); 
+            </script>
+  </div>
+  <div class="dateInput timeDateInput required">    
+      <label for="mainJourneyRequestDetailsdateH">Dagsetning</label>
+        <input name="date" id="mainJourneyRequestDetailsdate" type="text" value="05/06/2014" style="display: none;">
+        <select name="dateD" id="dateH" onchange="UpdateminimalJourneyRequestDetails_dateSelect(this)">
+          <option value="1">01</option><option value="2">02</option>
+          <option value="3">03</option><option value="4">04</option>
+          <option value="5">05</option><option value="6">06</option>
+          <option value="7">07</option><option value="8">08</option>
+          <option value="9">09</option><option value="10">10</option>
+          <option value="11">11</option><option value="12">12</option>
+          <option value="13">13</option><option value="14">14</option>
+          <option value="15">15</option><option value="16">16</option>
+          <option value="17">17</option><option value="18">18</option>
+          <option value="19">19</option><option value="20">20</option>
+          <option value="21">21</option><option value="22">22</option>
+          <option value="23">23</option><option value="24">24</option>
+          <option value="25">25</option><option value="26">26</option>
+          <option value="27">27</option><option value="28">28</option>
+          <option value="29">29</option><option value="30">30</option>
+        </select>
+
+        <select name="dateMY" id="dateM" onchange="UpdateminimalJourneyRequestDetails_dateSelect(this)">
+          <option value="2014-3">mars 2014</option>
+          <option value="2014-4">apríl 2014</option>
+          <option value="2014-5">maí 2014</option>
+          <option value="2014-6">júní 2014</option>
+          <option value="2014-7">júlí 2014</option>
+          <option value="2014-8">ágúst 2014</option>
+          <option value="2014-9">september 2014</option>
+          <option value="2014-10">október 2014</option>
+          <option value="2014-11">nóvember 2014</option>
+          <option value="2014-12">desember 2014</option>
+          <option value="2015-1">janúar 2015</option>
+          <option value="2015-2">febrúar 2015</option>
+        </select>
+      
+      <!-- Scripts for combo_date_selectorv0.1/tmInput.js included already -->
+      <script type="text/JavaScript" src="http://s.is/journeyplanner/servlet/scripts?name=uk/co/aimltd/resources/javascript/combo_date_selectorv0.1/dsInput.js"></script>
+        
+          <script type="text/JavaScript">
+            /* <![CDATA[ */ //<!--
+
+            var minimalJourneyRequestDetails_dateSelect = null ;
+            //
+            //  JavaScript functions created in tag lib with uri
+            //  "http://aimltd.co.uk/tags/form" date.tag
+            //  In jar file aimjspTaglib.
+            //
+
+            //
+            //  formWithDate - The form with the Date on it.
+            //         - Looks for an element called Date.
+            //
+            function UpdateminimalJourneyRequestDetails_dateSelect(selectElm)
+              {
+              var y = new String( minimalJourneyRequestDetails_dateSelect.getSelYear() );
+              var m = padZero( minimalJourneyRequestDetails_dateSelect.getSelMonth() );
+              var d = padZero( minimalJourneyRequestDetails_dateSelect.getSelDay() );
+
+              // Make sure the drop list picks up any changes.
+              // May have to show different numbers of days.
+              minimalJourneyRequestDetails_dateSelect.setDateParts(y,m,d);
+
+              // The date may have changed as a side effect of the setDateParts
+              // method, get them again and then set the date.
+              var y2 = new String( minimalJourneyRequestDetails_dateSelect.getSelYear() );
+              var m2 = padZero( minimalJourneyRequestDetails_dateSelect.getSelMonth() );
+              var d2 = padZero( minimalJourneyRequestDetails_dateSelect.getSelDay() );
+
+              // Set the hidden element
+              selectElm.form.date.value = d2 + '/' + m2 + '/' + y2;
+
+              }
+
+            function CreateminimalJourneyRequestDetails_dateSelect()
+              {
+              var timeForm = document.forms['minimalJourneyRequestDetails'] ;
+
+              if ( timeForm == null )
+                {
+                alert ( "ERROR: Unable to find form 'minimalJourneyRequestDetails'." );
+                }
+              else
+              if ( timeForm.mainJourneyRequestDetailsdate == null  )
+                {
+                alert ( "ERROR: Unable to find form 'minimalJourneyRequestDetails.date'." );
+                }
+              else
+              if ( timeForm.mainJourneyRequestDetailsdate.length != null  )
+                {
+                alert ( "ERROR: Multiple 'minimalJourneyRequestDetails.date' found." );
+                }
+              else
+                {
+                /*
+                 * Create the input boxes and hide the select for when javascript is on.
+                 */
+                 var inputElm = timeForm.mainJourneyRequestDetailsdate;
+                 var selectsHtml = "<select name='dateD'  id='dateH' onChange='UpdateminimalJourneyRequestDetails_dateSelect(this)'><" + "/select>"
+                         + "<select name='dateMY'  id='dateM' onChange='UpdateminimalJourneyRequestDetails_dateSelect(this)'><" + "/select>";
+                 $(inputElm).hide();
+                 $(inputElm).after(selectsHtml);
+
+                // Create the time selection
+                minimalJourneyRequestDetails_dateSelect = new dsInput( 'date', 'minimalJourneyRequestDetails' );
+
+                // Internationalize the month names
+                minimalJourneyRequestDetails_dateSelect.monthNames = new Array( '','janúar','febrúar','mars','apríl','maí','júní','júlí','ágúst','september','október','nóvember','desember' );
+
+                // Force an update so the new month names are used
+                minimalJourneyRequestDetails_dateSelect._initOptions();
+
+                
+                // Set the approprate date range
+                minimalJourneyRequestDetails_dateSelect.setDateRange("2014-03-27",
+                              "2015-02-09");
+                // Search for the label so that the target of the label can be changed
+                var prevNode = timeForm.date.previousSibling ;
+                while ( prevNode != null )
+                  {
+                  // Match only the previous label
+                  if ( prevNode.tagName == "LABEL" )
+                    {
+                    // Change the refrenced element
+                    prevNode.htmlFor = prevNode.htmlFor + "H" ;
+                    break;
+                    }
+                  // Get the next node
+                  prevNode = prevNode.previousSibling ;
+                  }
+
+                }
+              }
+        /*
+         * Create the input boxes and hide the select for when javascript is on.
+         */
+        // Needs jquery
+            $(document).ready(
+              function () 
+              {
+                CreateminimalJourneyRequestDetails_dateSelect();
+              } 
+            ); 
+            </script>
+      <div id="journeyTimeDateWindowHelp">
+        <div class="labelPadding"></div>
+        
+      </div>
+  </div>
+        <input class="bottomSearchButton inputButton btn btn-primary" tabindex="331" name="methoddefaultMethod" type="submit" value="Leita..." title="Leita...">
+    <input name="lang" type="hidden" value="is"></form>
