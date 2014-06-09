@@ -7,8 +7,11 @@ function InjectInfo(data){
 	dest.value = data.dest;
 	form.submit();
 }
-chrome.runtime.onMessage.addListener(function(request, sender) {
+chrome.runtime.onMessage.addListener(function(message, sender,sendResponse) {
     alert("HEY!");
   //if (request.action == "input") {
-    InjectInfo(request.data);
+    InjectInfo(message.data);
+    chrome.tabs.getCurrent(function(tab){
+    	tab.active = true;
+    });
 });
