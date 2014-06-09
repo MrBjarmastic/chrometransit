@@ -13,7 +13,8 @@
   	"content_scripts": [
   		{
   			"matches": ["http://www.straeto.is/"],
-  			"js": ["straeto.js"]
+  			"js": ["straeto.js"],
+        "run_at":"document_start"
   		}
 	]
 }

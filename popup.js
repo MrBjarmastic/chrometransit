@@ -9,8 +9,15 @@ document.addEventListener('DOMContentLoaded', function(){
 function searchForRoute(){
 
   var input = getInput();
-	chrome.tabs.create({ url: "http://www.straeto.is/" ,active:true},function(tab){    
-    chrome.tabs.sendMessage(tab.id, {action:"input",data: input});
+  
+  //alert(input);
+	chrome.tabs.create({ url: "http://www.straeto.is/" ,active:false},function(tab){ 
+    //alert("Penis")   
+    setTimeout(function () {        
+      chrome.tabs.sendMessage(tab.id, {data: input},function(){
+      });
+      tab.active = true;
+    }, 1000);
   });
   //chrome.tabs.executeScript(ID, { file: "straeto.js" },function(){
   //});

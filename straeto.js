@@ -1,17 +1,16 @@
 function InjectInfo(data){
-	alert("HEY! LISTEN!");
-	var origin = document.querySelector('#originName');
-	var dest = 	document.querySelector('#destinationName');
-	var form = 	document.querySelector('#minimalJourneyRequestDetails');
-	origin.value = data.origin;
-	dest.value = data.dest;
-	form.submit();
+   		var origin= document.getElementById('originName');
+		var dest = 	document.getElementById( 'destinationName');
+		var form = 	document.getElementById( 'minimalJourneyRequestDetails');
+		origin.value = data.origin;
+		dest.value = data.dest;
+	setTimeout(function () {        
+	//alert("HEY! LISTEN!");
+
+		form.submit();
+    }, 1000);
 }
 chrome.runtime.onMessage.addListener(function(message, sender,sendResponse) {
-    alert("HEY!");
-  //if (request.action == "input") {
+    sendResponse();
     InjectInfo(message.data);
-    chrome.tabs.getCurrent(function(tab){
-    	tab.active = true;
-    });
 });
