@@ -24,7 +24,7 @@
   <div id="origin" class="row">
 
     <label for="inpOrig" class="col-xs-4">Brottfarastaður</label>
-    <input type="text" id="inpOrig" class="col-xs-7" placeholder="Hvaðan ertu að ferðast?">
+    <input type="text" id="inpOrig" class="col-xs-7" placeholder="Hvaðan ertu að ferðast?" autofocus>
 
   </div>
   <div id="destination" class="row">
@@ -80,9 +80,7 @@
         <option value="50">50</option>
         <option value="55">55</option>
       </select>
-<!-- vantar ad laga radio, haegt ad velja 2, fatta ekki afthverju-->
-      
-    
+        
   </div>
   <div id="timeRelevence" class="row">
         
@@ -149,12 +147,13 @@
   </div>
   
 </div>
-<button id="searchButt" class="btn btn-default">Leita..</button>
+<button id="searchButt" class="btn">Leita..</button>
 </div>
 <div class="row">
-  <button id="mapButt" class="btn btn-default col-xs-4" >Rauntímakort</button>
-  <button id="tableButt" class="btn btn-default col-xs-4">Tímatöflur</button>
-  <button id="buyButt" class="btn btn-default col-xs-4">Kaupa kort</button>
+  
+  <button id="tableButt" class="btn col-xs-3">Tímatöflur</button>
+  <button id="mapButt" class="btn col-xs-4" >Rauntímakort</button>
+  <button id="buyButt" class="btn col-xs-3">Kaupa kort</button>
 </div>
 
 <form role="form" novalidate>
