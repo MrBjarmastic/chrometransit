@@ -20,26 +20,26 @@
 </head>
 <body style="width:400px;">
 <!--kanski hafa þetta form ?-->
-  <div id="seach">
-  <div id="origin">
+  <div id="seach" class="container-fluid">
+  <div id="origin" class="row">
 
-    <label for="inpOrig">Brottfarastaður</label>
-    <input type="text" id="inpOrig" placeholder="Hvaðan ertu að ferðast?">
+    <label for="inpOrig" class="col-xs-4">Brottfarastaður</label>
+    <input type="text" id="inpOrig" class="col-xs-7" placeholder="Hvaðan ertu að ferðast?">
 
   </div>
-  <div id="destination">
+  <div id="destination" class="row">
     
-    <label for="inpDest">Áfangastaður</label>
-    <input type="text" id="inpDest" placeholder="Hvert ertu að ferðast?">
+    <label for="inpDest" class="col-xs-4">Áfangastaður</label>
+    <input type="text" id="inpDest" class="col-xs-7" placeholder="Hvert ertu að ferðast?">
 
   </div>
-  <div id="time">
+  <div id="time" class="row">
 
-    <label for="timeSelect">Tími</label>
+    <label for="timeSelect" class="col-xs-2">Tími</label>
 <!--setja núverandi tíma-->
-    <div id="timeSelect">
+    
 
-      <select name="timeH" id="timeH">
+      <select name="timeH" id="timeH" class="col-xs-3">
         <option value="0">00</option>
         <option value="1">01</option>
         <option value="2">02</option>
@@ -66,7 +66,7 @@
         <option value="23">23</option>
       </select>
 
-      <select name="timeM" id="timeM">
+      <select name="timeM" id="timeM" class="col-xs-3">
         <option value="0">00</option>
         <option value="5">05</option>
         <option value="10">10</option>
@@ -81,22 +81,23 @@
         <option value="55">55</option>
       </select>
 <!-- vantar ad laga radio, haegt ad velja 2, fatta ekki afthverju-->
-      <div id="timeRelevence">
+      
+    
+  </div>
+  <div id="timeRelevence" class="row">
         
-          <label for="leave">
+          <label for="leave" class="col-xs-5">
             <input type="radio" name="rel" value="leaveBy" checked id="leave">Brottfarartími
           </label>
 
-          <label for="arrive">
+          <label for="arrive" class="col-xs-4">
             <input type="radio" name="rel" value="arriveBy" id="arrive">Komutími
           </label>
       </div>
-    </div>
-  </div>
 <!--setja default daginn i dag.-->
-<div id="Date">
-<label for="dateD">Dagsetning</label>
-  <select name="dateDay" id="dateD">
+<div id="Date" class="row">
+<label for="dateD" class="col-xs-3">Dagsetning</label>
+  <select name="dateDay" id="dateD" class="col-xs-3">
     <option value="1">01</option>
     <option value="2">02</option>
     <option value="3">03</option>
@@ -131,7 +132,7 @@
 
   <div id="DateMonth">
     
-    <select name="dateMonth" id="dateM" >
+    <select name="dateMonth" id="dateM" class="col-xs-4">
       <option value="2014-3">mars 2014</option>
       <option value="2014-4">apríl 2014</option>
       <option value="2014-5">maí 2014</option>
@@ -146,13 +147,14 @@
       <option value="2015-2">febrúar 2015</option>
       </select>
   </div>
+  
 </div>
-<button id="searchButt">Leita..</button>
+<button id="searchButt" class="btn btn-default">Leita..</button>
 </div>
-<div>
-  <button id="mapButt">Rauntímakort</button>
-  <button id="tableButt">Tímatöflur</button>
-  <button id="buyButt">Kaupa kort</button>
+<div class="row">
+  <button id="mapButt" class="btn btn-default col-xs-4" >Rauntímakort</button>
+  <button id="tableButt" class="btn btn-default col-xs-4">Tímatöflur</button>
+  <button id="buyButt" class="btn btn-default col-xs-4">Kaupa kort</button>
 </div>
 
 <form role="form" novalidate>
