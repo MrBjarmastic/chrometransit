@@ -1,8 +1,8 @@
 function InjectInfo(data){
 	var button = document.getElementsByName('methoddefaultMethod')[0]
-	var origin= document.getElementById('originName');
-	var dest = 	document.getElementById( 'destinationName');
-	var form = 	document.getElementById( 'minimalJourneyRequestDetails');
+	var origin = document.getElementById('originName');
+	var dest = 	document.getElementById('destinationName');
+	var form = 	document.getElementById('minimalJourneyRequestDetails');
 	//form.originName.blur();
 	button.focus();
 	origin.focus();
@@ -12,15 +12,15 @@ function InjectInfo(data){
 	dest.focus();
 	dest.value = data.dest;
 	form.destinationName.value = data.dest;
-	form.timeH.focus();	//form.methoddefaultMethod.onclick();
+	form.timeH.focus();	
 
+	form.timeH = data.timeH;
+	form.timeM = data.timeM;
 
-	//if (typeof button.onclick == "function") {
-	//    button.onclick.apply(button);
-	//}
-	setTimeout(function () {        
-		form.submit();
-    }, 500);
+	form.dateD = data.dateD;
+	form.dateMY = data.dateMY;   
+	
+	form.submit();
 }
 chrome.runtime.onMessage.addListener(function(message, sender,sendResponse) {
     //sendResponse();

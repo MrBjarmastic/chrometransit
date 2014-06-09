@@ -10,22 +10,26 @@ function searchForRoute(){
 
   var input = getInput();
 
-  //alert(input);
+  // Create the tab
 	chrome.tabs.create({ url: "http://www.straeto.is/" ,active:false},function(tab){ 
-    //alert("Penis")   
+    // Reference the id of the tab created
     input.ID = tab.id;
+    // Wait for the page to load... yeah i know its a hack
     setTimeout(function () {        
+      // Inject input data into the new tab
       chrome.tabs.sendMessage(tab.id, {data: input},function(){
+      });
+      // Set focus on the new tab (This does'nt seem to work.)
+      chrome.tabs.get(input.ID,function(theTab){
         tab.active = true;
       });
     }, 500);
   });
-  //chrome.tabs.executeScript(ID, { file: "straeto.js" },function(){
-  //});
-  //alert(input.origin);
 }
 
+// Gets the input from the 
 function getInput(){
+
     var input = {};
   input.origin = document.getElementById('inpOrig').value;
   input.dest = document.getElementById('inpDest').value;
