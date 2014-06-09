@@ -6,30 +6,33 @@ document.addEventListener('DOMContentLoaded', function(){
 	document.getElementById('buyButt').addEventListener('click', goToBuy);
 });
 
+function searchForRoute(){
 
-function findTitleTag(html){
-  var reg = "<title>*</title>";
-  
-
+  var input = getInput();
+	chrome.tabs.create({ url: "http://www.straeto.is/" ,active:true},function(tab){    
+    chrome.tabs.sendMessage(tab.id, {action:"input",data: input});
+  });
+  //chrome.tabs.executeScript(ID, { file: "straeto.js" },function(){
+  //});
+  //alert(input.origin);
 }
 
-function searchForRoute(){
-	var input = {};
-	input.origin = document.getElementById('inpOrig').value;
-	input.dest = document.getElementById('inpDest').value;
-	input.timeH = document.getElementById('timeH').options[document.getElementById('timeH').selectedIndex].value;
-	input.timeM = document.getElementById('timeM').options[document.getElementById('timeM').selectedIndex].value;
-	
-	if(document.getElementById('leave').checked){
-		input.timeRev = document.getElementById('leave').value;
-	} else {
-		input.timeRev = document.getElementById('arrive').value
-	}
-	
-	input.dateD = document.getElementById('dateD').options[document.getElementById('dateD').selectedIndex].value;
-	input.dateMY = document.getElementById('dateM').options[document.getElementById('dateM').selectedIndex].value;
-	console.log(input);
-	chrome.tabs.create({ url: "http://www.straeto.is/" });
+function getInput(){
+    var input = {};
+  input.origin = document.getElementById('inpOrig').value;
+  input.dest = document.getElementById('inpDest').value;
+  input.timeH = document.getElementById('timeH').options[document.getElementById('timeH').selectedIndex].value;
+  input.timeM = document.getElementById('timeM').options[document.getElementById('timeM').selectedIndex].value;
+  
+  if(document.getElementById('leave').checked){
+    input.timeRev = document.getElementById('leave').value;
+  } else {
+    input.timeRev = document.getElementById('arrive').value;
+  }
+  
+  input.dateD = document.getElementById('dateD').options[document.getElementById('dateD').selectedIndex].value;
+  input.dateMY = document.getElementById('dateM').options[document.getElementById('dateM').selectedIndex].value;
+  return input;
 }
 
 function goToMap(){
@@ -46,12 +49,6 @@ function goToBuy(){
 
 
 
-
-/*chrome.extension.onMessage.addListener(function(request, sender) {
-  if (request.action == "getSource") {
-    message.innerText = request.source;
-  }
-});*/
 function round (time) {
 	if(time%5 === 0){
 		return time;
@@ -77,17 +74,6 @@ var formDay = document.getElementById('dateD');
 formDay.value = timeObj.day || 0;
 var formMonth = document.getElementById('dateM');
 formMonth.value = timeObj.year + "-" + timeObj.month;
-/*  var message = document.querySelector('#message');
-
-  chrome.tabs.executeScript(null, {
-    file: "getPagesSource.js"
-  }, function() {
-    // If you try and inject into an extensions page or the webstore/NTP you'll get an error
-    if (chrome.extension.lastError) {
-      message.innerText = 'There was an error injecting script : \n' + chrome.extension.lastError.message;
-    }
-  });
-*/
 }
 
 window.onload = onWindowLoad;
