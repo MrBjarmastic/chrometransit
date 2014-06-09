@@ -1,16 +1,28 @@
 function InjectInfo(data){
-   		var origin= document.getElementById('originName');
-		var dest = 	document.getElementById( 'destinationName');
-		var form = 	document.getElementById( 'minimalJourneyRequestDetails');
-		origin.value = data.origin;
-		dest.value = data.dest;
-	setTimeout(function () {        
-	//alert("HEY! LISTEN!");
+	var button = document.getElementsByName('methoddefaultMethod')[0]
+	var origin= document.getElementById('originName');
+	var dest = 	document.getElementById( 'destinationName');
+	var form = 	document.getElementById( 'minimalJourneyRequestDetails');
+	//form.originName.blur();
+	button.focus();
+	origin.focus();
+	origin.value = data.origin;
+	form.originName.value = data.origin;
+	form.timeH.focus();
+	dest.focus();
+	dest.value = data.dest;
+	form.destinationName.value = data.dest;
+	form.timeH.focus();	//form.methoddefaultMethod.onclick();
 
+
+	//if (typeof button.onclick == "function") {
+	//    button.onclick.apply(button);
+	//}
+	setTimeout(function () {        
 		form.submit();
-    }, 1000);
+    }, 500);
 }
 chrome.runtime.onMessage.addListener(function(message, sender,sendResponse) {
-    sendResponse();
+    //sendResponse();
     InjectInfo(message.data);
 });

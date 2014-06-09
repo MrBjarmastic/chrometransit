@@ -9,15 +9,16 @@ document.addEventListener('DOMContentLoaded', function(){
 function searchForRoute(){
 
   var input = getInput();
-  
+
   //alert(input);
 	chrome.tabs.create({ url: "http://www.straeto.is/" ,active:false},function(tab){ 
     //alert("Penis")   
+    input.ID = tab.id;
     setTimeout(function () {        
       chrome.tabs.sendMessage(tab.id, {data: input},function(){
+        tab.active = true;
       });
-      tab.active = true;
-    }, 1000);
+    }, 500);
   });
   //chrome.tabs.executeScript(ID, { file: "straeto.js" },function(){
   //});
