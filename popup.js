@@ -52,10 +52,32 @@ function goToBuy(){
     message.innerText = request.source;
   }
 });*/
+function round (time) {
+	if(time%5 === 0){
+		return time;
+	} else {
+		return time + (5 - time%5);
+	}
+}
 
 function onWindowLoad() {
-
-  var message = document.querySelector('#message');
+var timeObj = {};
+var d = new Date();
+timeObj.month = d.getMonth() + 1;
+timeObj.year = d.getFullYear();
+timeObj.day = d.getDate();
+timeObj.hour = d.getHours();
+timeObj.minute = round(d.getMinutes());
+console.log(timeObj);
+var formHour = document.getElementById('timeH');
+formHour.value = timeObj.hour || 0;
+var formMinute = document.getElementById('timeM');
+formMinute.value = timeObj.minute || 0;
+var formDay = document.getElementById('dateD');
+formDay.value = timeObj.day || 0;
+var formMonth = document.getElementById('dateM');
+formMonth.value = timeObj.year + "-" + timeObj.month;
+/*  var message = document.querySelector('#message');
 
   chrome.tabs.executeScript(null, {
     file: "getPagesSource.js"
@@ -65,7 +87,7 @@ function onWindowLoad() {
       message.innerText = 'There was an error injecting script : \n' + chrome.extension.lastError.message;
     }
   });
-
+*/
 }
 
 window.onload = onWindowLoad;

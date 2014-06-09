@@ -17,3 +17,16 @@ img {
 	font-style: italic;
 }
 
+.row {
+	padding-bottom: 4px;
+}
+
+button { 
+color:white;
+background-color:darkred; 
+
+}
+
+button:hover{
+	color:rgb(235, 235, 71);
+}
