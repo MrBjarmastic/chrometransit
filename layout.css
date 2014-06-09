@@ -2,7 +2,8 @@ body{
     min-width: 357px;
     overflow-x: hidden;
     background-color: #fff6dd;
-    padding:7px 7px 7px 7px;
+    padding:7px 7px 0px 7px;
+    margin-bottom: 0px;
 }
 
 img {
@@ -18,15 +19,29 @@ img {
 }
 
 .row {
-	padding-bottom: 4px;
+	padding-top: 4px;
 }
-
+/*border kemur ekki, væri skemmtilegra að aðskilja þetta smá!.*/
 button { 
 color:white;
-background-color:darkred; 
+background-color:#ad0000;
+border-width: 3px;
+border-color: white;
+margin: 11px;
+padding: 0px;
+border-style: solid;
 
+}
+
+select {
+	margin-right: 5px;
+	margin-left: 5px;
 }
 
 button:hover{
 	color:rgb(235, 235, 71);
+}
+
+#search {
+	padding-bottom: 3px;
 }
