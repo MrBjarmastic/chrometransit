@@ -5,7 +5,7 @@ function InjectInfo(data){
 	var form = 	document.getElementById('minimalJourneyRequestDetails');
 	//form.originName.blur();
 	button.focus();
-	origin.focus();
+	//origin.focus();
 	origin.value = data.origin;
 	form.originName.value = data.origin;
 	form.timeH.focus();
