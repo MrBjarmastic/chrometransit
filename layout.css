@@ -1,6 +1,8 @@
 body{	
     min-width: 357px;
     overflow-x: hidden;
+    background-color: #fff6dd;
+    padding:7px 7px 7px 7px;
 }
 
 img {
@@ -10,3 +12,8 @@ img {
 	width: 75px;
 	height: 75px;
 }
+
+#inpDest {
+	font-style: italic;
+}
+

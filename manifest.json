@@ -1,13 +1,19 @@
 {
   "manifest_version": 2,
 
-  "name": "Site Title Searcher",
-  "description": "This extension demonstrates a browser action with kittens.",
+  "name": "ShortBus",
+  "description": "Extension for straeto.is. To be used to decrease the time needed to access parts of the website.",
   "version": "1.0",
 
-  "permissions": ["tabs", "<all_urls>"],
+  "permissions": ["tabs", "http://straeto.is/*"],
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"
-  }
+  },
+  	"content_scripts": [
+  		{
+  			"matches": ["http://www.straeto.is/"],
+  			"js": ["straeto.js"]
+  		}
+	],
 }
